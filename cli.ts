@@ -1,4 +1,4 @@
-import readline from 'readline';
+import * as readline from 'readline';
 import { executeTransformation } from './src/api';
 import { csvFileExtensionRegex } from './src/helpers';
 

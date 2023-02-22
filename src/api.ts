@@ -19,7 +19,7 @@ export const executeTransformation = (fileName: string) => {
                     json: JSON.stringify(result),
                     is_valid: !!result.length,
                 });
-            }
+            } else {} // todo: provide message in console or smth.
         })
         .on('end', (rowCount: number) => {
             // console.log(`\nEnd. Parsed ${rowCount} rows.`);
