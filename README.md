@@ -11,7 +11,7 @@
 # Run
 To run cli, you can do in two ways:
 1) Use ts-node by running `npm run cli input.csv`.
-2) 1) Run `node --experimental-specifier-resolution=node build/cli.js input.csv`. Do not forget to use `--experimental-specifier-resolution=node` flag.
+2) 1) Run `node build/cli.js input.csv`.
    2) use command from package.json:`npm run cli:build input.csv`.
 
 # Test
