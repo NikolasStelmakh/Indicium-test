@@ -6,7 +6,7 @@
   "main": "cli.ts",
   "scripts": {
     "build": "npm run clean && npx tsc --project tsconfig.build.json",
-    "build:webpack": "rm -rf ./build cli.js && webpack",
+    "build:webpack": "rm -rf cli.js && webpack",
     "clean": "rm -rf ./build",
     "cli": "ts-node cli.ts",
     "cli:build": "node build-webpack/cli.js",
