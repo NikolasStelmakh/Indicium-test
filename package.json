@@ -11,7 +11,7 @@
     "cli": "ts-node cli.ts",
     "cli:build": "node build-webpack/cli.js",
     "eslint:fix": "eslint --fix --ignore-path .eslintignore --ext .js,.ts .",
-    "test": "node --experimental-vm-modules ./node_modules/.bin/jest"
+    "test": "node ./node_modules/.bin/jest"
   },
   "type": "commonjs",
   "keywords": [],
