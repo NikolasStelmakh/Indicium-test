@@ -6,13 +6,12 @@
 # Setup
 
 1) Install packages: run `npm install` in terminal.
-2) Create build from ts files: run `npm run build` in terminal.
+2) Create build from ts files: run `npm run build:webpack` in terminal.
 
 # Run
 To run cli, you can do in two ways:
 1) Use ts-node by running `npm run cli input.csv`.
-2) 1) Run `node build/cli.js input.csv`.
-   2) use command from package.json:`npm run cli:build input.csv`.
+2) Run `node cli.js input.csv`.
 
 # Test
 There are several examples of different table sizes. </br>
