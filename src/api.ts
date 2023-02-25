@@ -1,7 +1,6 @@
 import * as fs from 'fs';
 import * as csv from 'fast-csv';
-import { isOdd } from './helpers';
-import { TableChunks, TableIdValue, TableJsonValue } from './types';
+import { TableIdValue, TableJsonValue } from './types';
 
 export const executeTransformation = (fileName: string) => {
     const csvOutputStream = csv.format({ headers: true });
@@ -13,7 +12,7 @@ export const executeTransformation = (fileName: string) => {
         .on('data', (row: { id: string; json: string }) => {
             const { id, json } = row;
             if (id.length && json.length) {
-                const result = rotateTable(JSON.parse(json), JSON.parse(id));
+                const result = rotateMatrix(JSON.parse(json), JSON.parse(id));
                 csvOutputStream.write({
                     id: `${id}`,
                     json: JSON.stringify(result),
@@ -29,146 +28,73 @@ export const executeTransformation = (fileName: string) => {
         });
 };
 
-export const rotateTable = (
+export const rotateMatrix = (
     data: TableJsonValue,
-    id?: TableIdValue, // could be useful for logging
-): TableJsonValue => {
-    const tableChunkLength = Math.sqrt(data.length);
+    id: TableIdValue, // could be useful for logging
+) => {
+    // in the task matrix length and height are equal
+    const matrixLength = Math.sqrt(data.length);
+    const matrixHeight = matrixLength;
+
     let isTableValid = false;
-    if (data.length && Number.isInteger(tableChunkLength)) isTableValid = true;
+    if (data.length && Number.isInteger(matrixLength)) isTableValid = true;
 
     if (!isTableValid) {
         // console.log(`invalid data: id=${id}, data=${JSON.stringify(data)}, returning []`);
         return [];
     }
 
-    const chunks = createChunks(data, tableChunkLength);
-    const tableChunkHeight = chunks.length; // variable added in case we have non-square table, for example: 4x5 (functional not implemented on 100%, but variable added to make less work in future)
+    const framesCount = Math.floor((matrixLength > matrixHeight ? matrixHeight : matrixLength) / 2)
 
-    const rotatedTableResult: TableJsonValue = [];
+    for (let frameIndex = 0; frameIndex < framesCount; frameIndex++) {
+        const frameTopStartIndex = frameIndex*(matrixLength + 1);
+        const frameTopEndIndex = (matrixLength - 1)*(frameIndex + 1);
+        const frameBottomStartIndex = data.length - 1 - frameIndex*(matrixLength + 1);
+        const frameBottomEndIndex = data.length - 1 - (frameIndex + 1)*(matrixLength - 1);
 
-    if (isOdd(tableChunkLength)) {
-        // odd table size
-        chunks.forEach((chunk, rowIndex) => {
-            const tableMiddleRowIndex = Math.floor(tableChunkHeight / 2);
+        let index = frameTopStartIndex;
+        let temporaryValue;
 
-            chunk.forEach((elem, columnIndex) => {
-                const originalIndex = rowIndex * tableChunkLength + columnIndex;
-                const isUpperPartOfTheTable = rowIndex < tableMiddleRowIndex; // chunk is from upper part of the table
-                const isLowerPartOfTheTable = rowIndex > tableMiddleRowIndex; // chunk is from lower part of the table
-                const columnSquareStartIndex = isUpperPartOfTheTable
-                    ? rowIndex
-                    : tableChunkLength - 1 - rowIndex; // square can mean subsquare as well
-                const columnSquareEndIndex = isUpperPartOfTheTable
-                    ? tableChunkLength - 1 - rowIndex
-                    : rowIndex; // square can mean subsquare as well
+        // top -> move right
+        do {
+            let nextIndex = index + 1
+            const nextElement = data[nextIndex];
+            data[nextIndex] = temporaryValue ? temporaryValue : data[index];
+            temporaryValue = nextElement;
 
-                if (isUpperPartOfTheTable) {
-                    if (
-                        columnIndex >= columnSquareStartIndex &&
-                        columnIndex < columnSquareEndIndex
-                    ) {
-                        rotatedTableResult[originalIndex + 1] = elem; // move right
-                    } else if (columnIndex < columnSquareStartIndex) {
-                        rotatedTableResult[originalIndex - tableChunkLength] =
-                            elem; // move up
-                    } else if (columnIndex >= columnSquareEndIndex) {
-                        rotatedTableResult[originalIndex + tableChunkLength] =
-                            elem; // move down
-                    }
-                } else if (isLowerPartOfTheTable) {
-                    if (
-                        columnIndex > columnSquareStartIndex &&
-                        columnIndex <= columnSquareEndIndex
-                    ) {
-                        rotatedTableResult[originalIndex - 1] = elem; // move left
-                    } else if (columnIndex <= columnSquareStartIndex) {
-                        rotatedTableResult[originalIndex - tableChunkLength] =
-                            elem; // move up
-                    } else if (columnIndex > columnSquareEndIndex) {
-                        rotatedTableResult[originalIndex + tableChunkLength] =
-                            elem; // move down
-                    }
-                } else {
-                    // chunk is from the middle of the table
-                    const chunkSingularElemIndex = Math.floor(
-                        tableChunkLength / 2,
-                    );
-                    if (columnIndex === chunkSingularElemIndex) {
-                        rotatedTableResult[originalIndex] = elem;
-                    } else if (columnIndex < chunkSingularElemIndex) {
-                        rotatedTableResult[originalIndex - tableChunkLength] =
-                            elem; // move up
-                    } else if (columnIndex > chunkSingularElemIndex) {
-                        rotatedTableResult[originalIndex + tableChunkLength] =
-                            elem; // move down
-                    }
-                }
-            });
-        });
-    } else {
-        // even table size
-        chunks.forEach((chunk, rowIndex) => {
-            const tableLastUpperRowIndex = tableChunkHeight / 2 - 1;
+            index = nextIndex;
+        } while (index !== frameTopEndIndex);
 
-            chunk.forEach((elem, columnIndex) => {
-                const originalIndex = rowIndex * tableChunkLength + columnIndex;
-                const isUpperPartOfTheTable =
-                    rowIndex <= tableLastUpperRowIndex; // chunk is from upper part of the table
-                const columnSquareStartIndex = isUpperPartOfTheTable
-                    ? rowIndex
-                    : tableChunkLength - 1 - rowIndex; // square can mean subsquare as well
-                const columnSquareEndIndex = isUpperPartOfTheTable
-                    ? tableChunkLength - 1 - rowIndex
-                    : rowIndex; // square can mean subsquare as well
+        // right -> move down
+        do {
+            let nextIndex = index + matrixLength
+            const nextElement = data[nextIndex];
+            data[nextIndex] = temporaryValue;
+            temporaryValue = nextElement;
 
-                if (isUpperPartOfTheTable) {
-                    if (
-                        columnIndex >= columnSquareStartIndex &&
-                        columnIndex < columnSquareEndIndex
-                    ) {
-                        rotatedTableResult[originalIndex + 1] = elem; // move right
-                    } else if (columnIndex < columnSquareStartIndex) {
-                        rotatedTableResult[originalIndex - tableChunkLength] =
-                            elem; // move up
-                    } else if (columnIndex >= columnSquareEndIndex) {
-                        rotatedTableResult[originalIndex + tableChunkLength] =
-                            elem; // move down
-                    }
-                } else {
-                    // lower part of the table
-                    if (
-                        columnIndex > columnSquareStartIndex &&
-                        columnIndex <= columnSquareEndIndex
-                    ) {
-                        rotatedTableResult[originalIndex - 1] = elem; // move left
-                    } else if (columnIndex <= columnSquareStartIndex) {
-                        rotatedTableResult[originalIndex - tableChunkLength] =
-                            elem; // move up
-                    } else if (columnIndex > columnSquareEndIndex) {
-                        rotatedTableResult[originalIndex + tableChunkLength] =
-                            elem; // move down
-                    }
-                }
-            });
-        });
+            index = nextIndex;
+        } while (index !== frameBottomStartIndex);
+
+        // bottom -> move left
+        do {
+            let nextIndex = index - 1
+            const nextElement = data[nextIndex];
+            data[nextIndex] = temporaryValue;
+            temporaryValue = nextElement;
+
+            index = nextIndex;
+        } while (index !== frameBottomEndIndex);
+
+        // left -> move up
+        do {
+            let nextIndex = index - matrixLength
+            const nextElement = data[nextIndex];
+            data[nextIndex] = temporaryValue;
+            temporaryValue = nextElement;
+
+            index = nextIndex;
+        } while (index !== frameTopStartIndex);
     }
 
-    return rotatedTableResult;
-};
-export const createChunks = (
-    data: TableJsonValue,
-    chunkSize: number,
-): TableChunks => {
-    return data.reduce((resultArray: TableChunks, item, index) => {
-        const chunkIndex = Math.floor(index / chunkSize);
-
-        if (!resultArray[chunkIndex]) {
-            resultArray[chunkIndex] = []; // start a new chunk
-        }
-
-        resultArray[chunkIndex].push(item);
-
-        return resultArray;
-    }, []);
-};
+    return data;
+}

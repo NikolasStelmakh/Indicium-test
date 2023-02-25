@@ -3,3 +3,9 @@ export const isOdd = (num: number) => {
 };
 
 export const csvFileExtensionRegex = /.+(\.csv)$/;
+
+export const isNumber = (value: any) => {
+    return typeof value === 'number' && isFinite(value);
+}
+
+
