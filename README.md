@@ -9,13 +9,10 @@
 2) Create build from ts files: run `npm run build:webpack` in terminal.
 
 # Run
-To run cli, you can do in several ways:
-1) Run `node cli.js input.csv`.
-2) Use ts-node by running `npm run cli input.csv`.
-3) Generate build by typescript `npm run build` and run `node build/cli.js input.csv`.
+Run `node cli.js input.csv`. in terminal.
 
 # Test
-There are several examples of different table sizes. </br>
+There are several examples of different table sizes. And different input file data (including big one).</br>
 `npm run test`
 
 # Task Description

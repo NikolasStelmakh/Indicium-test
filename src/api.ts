@@ -57,7 +57,7 @@ export const rotateMatrix = (
 
         // top -> move right
         do {
-            let nextIndex = index + 1
+            const nextIndex = index + 1
             const nextElement = data[nextIndex];
             data[nextIndex] = temporaryValue ? temporaryValue : data[index];
             temporaryValue = nextElement;
@@ -67,7 +67,7 @@ export const rotateMatrix = (
 
         // right -> move down
         do {
-            let nextIndex = index + matrixLength
+            const nextIndex = index + matrixLength
             const nextElement = data[nextIndex];
             data[nextIndex] = temporaryValue;
             temporaryValue = nextElement;
@@ -77,7 +77,7 @@ export const rotateMatrix = (
 
         // bottom -> move left
         do {
-            let nextIndex = index - 1
+            const nextIndex = index - 1
             const nextElement = data[nextIndex];
             data[nextIndex] = temporaryValue;
             temporaryValue = nextElement;
@@ -87,7 +87,7 @@ export const rotateMatrix = (
 
         // left -> move up
         do {
-            let nextIndex = index - matrixLength
+            const nextIndex = index - matrixLength
             const nextElement = data[nextIndex];
             data[nextIndex] = temporaryValue;
             temporaryValue = nextElement;
