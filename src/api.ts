@@ -19,7 +19,7 @@ export const executeTransformation = (fileName: string) => {
                     is_valid: !!result.length,
                 });
             } else {
-                console.log('Data is not valid: ' + JSON.stringify(row))
+                console.log('Data is not valid: ' + JSON.stringify(row));
             }
         })
         .on('end', (rowCount: number) => {
@@ -44,20 +44,24 @@ export const rotateMatrix = (
         return [];
     }
 
-    const framesCount = Math.floor((matrixLength > matrixHeight ? matrixHeight : matrixLength) / 2)
+    const framesCount = Math.floor(
+        (matrixLength > matrixHeight ? matrixHeight : matrixLength) / 2,
+    );
 
     for (let frameIndex = 0; frameIndex < framesCount; frameIndex++) {
-        const frameTopStartIndex = frameIndex*(matrixLength + 1);
-        const frameTopEndIndex = (matrixLength - 1)*(frameIndex + 1);
-        const frameBottomStartIndex = data.length - 1 - frameIndex*(matrixLength + 1);
-        const frameBottomEndIndex = data.length - 1 - (frameIndex + 1)*(matrixLength - 1);
+        const frameTopStartIndex = frameIndex * (matrixLength + 1);
+        const frameTopEndIndex = (matrixLength - 1) * (frameIndex + 1);
+        const frameBottomStartIndex =
+            data.length - 1 - frameIndex * (matrixLength + 1);
+        const frameBottomEndIndex =
+            data.length - 1 - (frameIndex + 1) * (matrixLength - 1);
 
         let index = frameTopStartIndex;
         let temporaryValue;
 
         // top -> move right
         do {
-            const nextIndex = index + 1
+            const nextIndex = index + 1;
             const nextElement = data[nextIndex];
             data[nextIndex] = temporaryValue ? temporaryValue : data[index];
             temporaryValue = nextElement;
@@ -67,7 +71,7 @@ export const rotateMatrix = (
 
         // right -> move down
         do {
-            const nextIndex = index + matrixLength
+            const nextIndex = index + matrixLength;
             const nextElement = data[nextIndex];
             data[nextIndex] = temporaryValue;
             temporaryValue = nextElement;
@@ -77,7 +81,7 @@ export const rotateMatrix = (
 
         // bottom -> move left
         do {
-            const nextIndex = index - 1
+            const nextIndex = index - 1;
             const nextElement = data[nextIndex];
             data[nextIndex] = temporaryValue;
             temporaryValue = nextElement;
@@ -87,7 +91,7 @@ export const rotateMatrix = (
 
         // left -> move up
         do {
-            const nextIndex = index - matrixLength
+            const nextIndex = index - matrixLength;
             const nextElement = data[nextIndex];
             data[nextIndex] = temporaryValue;
             temporaryValue = nextElement;
@@ -97,4 +101,4 @@ export const rotateMatrix = (
     }
 
     return data;
-}
+};
