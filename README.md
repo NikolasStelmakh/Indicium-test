@@ -18,6 +18,11 @@ There are several examples of different table sizes. And different input file da
 # Task Description
 ![description](./visual-description.png)
 
+**Details**<br/>
+Given a CSV file representing a series of tables, implement a rotation engine
+that parses, verifies and rotates each table, and finally outputs a CSV file with
+all valid and rotated tables.
+
 You should be able to run your program like:<br/>
 ~ $ node cli.js input.csv > output.csv<br/>
 The input file is the first and only argument to the program. Output should be
