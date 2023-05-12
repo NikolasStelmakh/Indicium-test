@@ -9,7 +9,7 @@
     "build:webpack": "rm -rf cli.js && webpack",
     "clean": "rm -rf ./build",
     "cli": "ts-node cli.ts",
-    "cli:build": "node build-webpack/cli.js",
+    "cli:build": "node cli.js",
     "eslint:fix": "eslint --fix --ignore-path .eslintignore --ext .js,.ts .",
     "test": "node ./node_modules/.bin/jest"
   },
